@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "705220663584",
+    "firebase_url": "https://playconnect-fba6e.firebaseio.com",
+    "project_id": "playconnect-fba6e",
+    "storage_bucket": "playconnect-fba6e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:705220663584:android:65656064f1c6787ecf9f45",
+        "android_client_info": {
+          "package_name": "com.example.playconnect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "705220663584-ph031kd7vvg6ecdqckd4irq9tk9o9365.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.playconnect",
+            "certificate_hash": "ae8fbe3193126f8ba3abd514dea6f8cabee866b9"
+          }
+        },
+        {
+          "client_id": "705220663584-gdutqfr89e9sd6c2ovnrrtglaef1ha09.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqFmpcW1olakWn8OpBKnlsLi7g6ABdsoQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "705220663584-gdutqfr89e9sd6c2ovnrrtglaef1ha09.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
