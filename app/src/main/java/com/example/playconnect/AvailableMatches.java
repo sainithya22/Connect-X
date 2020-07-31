@@ -3,6 +3,7 @@ package com.example.playconnect;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,13 +24,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class AvailableMatches extends Fragment {
 
     ListView listView;
     List<Match> MatchList = new ArrayList<>();
+    List<String> MatchId = new ArrayList<>();
     final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("matches");
     String SportName;
 
@@ -44,6 +48,8 @@ public class AvailableMatches extends Fragment {
         if (bundle != null) {
             SportName = this.getArguments().getString("Sport");
         }
+        final DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("users");
+
        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
            @Override
            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -51,11 +57,14 @@ public class AvailableMatches extends Fragment {
                        .setMessage("Are you willing to play this match?")
                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                            @Override
-                           public void onClick(DialogInterface dialog, int which) {
+                           public void onClick(DialogInterface dialog, int which){
                                     Match match = MatchList.get(position);
                                     match.availablePlayers+=1;
-                                    FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                                    match.player_ids.add(currentFirebaseUser.getUid());
+                                    String matchID = match.getMatchID();
+                                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                    String userID= currentUser.getUid();
+                                    match.player_ids.add(currentUser.getUid());
+
                            }
                        })
                        .setNegativeButton("NO", null)
@@ -78,9 +87,16 @@ public class AvailableMatches extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 MatchList.clear();
 
-                for (DataSnapshot matchDataSnapshot : snapshot.getChildren()) {
-                    Match match = matchDataSnapshot.getValue(Match.class);
-                    MatchList.add(match);
+                for(DataSnapshot ds :snapshot.getChildren()) {
+                    Match match = ds.getValue(Match.class);
+
+                    if(match.availablePlayers< match.requiredPlayers) {
+                        String pattern = "dd-MM-yyyy";
+                        String dateInString = new SimpleDateFormat(pattern).format(new Date());
+                        MatchList.add(match);
+
+                        //Log.i("Match name", matchId);
+                    }
                 }
                 matchList adapter = new matchList(getActivity(), MatchList);
                 listView.setAdapter(adapter);

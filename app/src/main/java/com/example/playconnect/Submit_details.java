@@ -34,6 +34,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.stream.IntStream;
 
 public class Submit_details extends Fragment  {
+   String address;
+
+   public void setAddress(String add){
+       this.address= add;
+   }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -45,32 +51,28 @@ public class Submit_details extends Fragment  {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dropdown.setAdapter(adapter);
 
-        /*FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.add();*/
-
-        final Address address;
-
         Bundle bundle = this.getArguments();
-
         if(bundle!=null) {
-            String strtext = this.getArguments().getString("Sport");
+        /*if(bundle.getString("Address")!=null) {
+            address = bundle.getString("Address");
+            TextView addressView = (TextView) view.findViewById(R.id.addressView);
+            addressView.setText(address);
+            Log.i("ADDRESSSSSSSSSSSSSS",address);
+        }*/ String strtext = bundle.getString("Sport");
             TextView SportName = (TextView) view.findViewById(R.id.textView3);
             SportName.setText(strtext);
 
         }
 
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference("matches");
-       /* Intent intent = getActivity().getIntent();
-        if (intent.getExtras() != null) {
-            String name =intent.getStringExtra("Sport");
-        }*/
+
         ImageButton button = (ImageButton) view.findViewById(R.id.imageButton2);
         DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
                 TextView DateView = (TextView) getView().findViewById(R.id.choose_date);
-                String dateString = dayOfMonth + "/" + month + "/" + year;
+                String dateString = dayOfMonth + "-" + month + "-" + year;
                 DateView.setText(dateString);
 
             }
@@ -113,10 +115,6 @@ public class Submit_details extends Fragment  {
             }
         });
 
-        /*if(getArguments().getString("Address")!=null){
-            TextView addressView = (TextView) view.findViewById(R.id.address);
-            addressView.setText(getArguments().getString("Address"));
-        }*/
 
         Button submitButton = (Button) view.findViewById(R.id.submit);
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -131,13 +129,11 @@ public class Submit_details extends Fragment  {
                 String date=  DateView.getText().toString();
                 String sport = SportName.getText().toString();
                 Integer players= (Integer)dropdown.getSelectedItem();
-                String getArgument = getArguments().getString("Address");
+                //String getArgument = getArguments().getString("Address");
                 //String address = addressView.getText().toString();
-                Log.i("ADDRESSSSSSSSSSSSSS",getArgument);
-
                 String id = database.push().getKey();
                 FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
-                Match match= new Match(sport,date,players,time,getArgument, currentFirebaseUser.getUid());
+                Match match= new Match(sport,date,players,time,address,currentFirebaseUser.getUid(),id);
                 database.child(id).setValue(match);
             }
         });

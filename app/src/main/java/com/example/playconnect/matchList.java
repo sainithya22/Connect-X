@@ -21,7 +21,6 @@ public class matchList extends ArrayAdapter<Match> {
         super(context,R.layout.list_view_item, matchList);
         this.context= context;
         this.matchList= matchList;
-
     }
 
     @NonNull
@@ -34,7 +33,7 @@ public class matchList extends ArrayAdapter<Match> {
         TextView locationView = (TextView) listViewItem.findViewById(R.id.locationView);
 
         Match match = matchList.get(position);
-        dateTimeView.setText(match.getDate().toString()+"     "+match.getTime().toString());
+        dateTimeView.setText(match.getDate().toString()+"     "+match.getTime().toString()+"        "+match.admin.toString());
         locationView.setText(match.getLocation());
 
         return listViewItem;

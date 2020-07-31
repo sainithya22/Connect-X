@@ -9,7 +9,7 @@
 
     <EditText
         android:id="@+id/et_otp"
-        android:layout_width="0dp"
+        android:layout_width="300dp"
         android:layout_height="70dp"
         android:layout_marginStart="99dp"
         android:layout_marginTop="262dp"
@@ -44,5 +44,52 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/bt_resend_otp"
         app:layout_constraintTop_toBottomOf="@+id/et_otp" />
+
+    <TextView
+        android:id="@+id/setPwdTextView"
+        android:layout_width="212dp"
+        android:layout_height="69dp"
+        android:layout_marginStart="99dp"
+        android:layout_marginTop="125dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="68dp"
+        android:gravity="center"
+        android:text="SET PASSWORD"
+        android:textColor="#FCFAFA"
+        android:textSize="24sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/et_otp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/passwordRule"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="31dp"
+        android:text="Your password must contain atleast 8 characters"
+        android:textColor="#F5F0F0"
+        android:textStyle="italic"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_otp" />
+
+    <Button
+        android:id="@+id/button7"
+        android:layout_width="191dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="110dp"
+        android:layout_marginTop="104dp"
+        android:layout_marginEnd="110dp"
+        android:enabled="false"
+        android:text="SET password"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordRule" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

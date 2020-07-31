@@ -48,7 +48,15 @@ public class ScheduleMatch extends Fragment implements View.OnClickListener{
 
             @Override
             public void onAnimationEnd(Animation animation) {
-
+                Bundle bundle=new Bundle();
+                bundle.putString("Sport", button.getText().toString());
+                Fragment fragment = new Submit_details();
+                fragment.setArguments(bundle);
+                FragmentManager fragmentManager = getChildFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.frag_container2,fragment);
+                //fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
 
             @Override
@@ -56,16 +64,7 @@ public class ScheduleMatch extends Fragment implements View.OnClickListener{
 
             }
         });
-        Bundle bundle=new Bundle();
-        bundle.putString("Sport", button.getText().toString());
-        Fragment fragment = new Submit_details();
-        fragment.setArguments(bundle);
-        FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.frag_container2,fragment);
-        fragmentTransaction.addToBackStack(null);
-        // fragmentManager.popBackStack();
-        fragmentTransaction.commit();
+
 
     }
 }

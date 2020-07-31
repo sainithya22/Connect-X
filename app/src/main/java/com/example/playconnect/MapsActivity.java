@@ -362,21 +362,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String title = address + "-" + city + "-" + state;
             Log.i("ADDRESS", address);
 
-            Bundle data = new Bundle();//create bundle instance
-            data.putString("Address", title);
-            Fragment fragment = new Submit_details();
-            fragment.setArguments(data);
-            //getSupportFragmentManager().popBackStack();
+            /*Bundle data = new Bundle();//create bundle instance
+            data.putString("Address", title);*/
+            Submit_details fragment = (Submit_details) getSupportFragmentManager().findFragmentById(R.id.frag_container2);
+            fragment.setAddress(address);
 
-            /*Intent intent = new Intent(this,Offline.class);
-            startActivity(intent);*/
 
-            /*FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.map,fragment);
-            fragmentTransaction.addToBackStack(null);
-            // fragmentManager.popBackStack();
-            fragmentTransaction.commit();*/
         } catch (Exception e) {
             e.printStackTrace();
         }

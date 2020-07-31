@@ -12,12 +12,10 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="300dp"
-        android:onClick="login"
+        android:layout_marginTop="68dp"
 
+        android:onClick="login"
         android:text="LOGIN"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
@@ -25,14 +23,14 @@
         android:id="@+id/button2"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="300dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="179dp"
+        android:layout_marginTop="68dp"
         android:layout_marginEnd="16dp"
-        android:onClick="signup"
 
+        android:onClick="signup"
         android:text="SIGNUP"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/button"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <ImageView
@@ -48,6 +46,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/football" />
+        app:srcCompat="@drawable/footballchild" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
