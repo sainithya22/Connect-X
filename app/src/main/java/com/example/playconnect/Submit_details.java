@@ -19,26 +19,56 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.sql.Time;
 import java.util.*;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.stream.IntStream;
 
-public class Submit_details extends Fragment  {
-   String address;
+import static android.app.Activity.RESULT_OK;
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
-   public void setAddress(String add){
-       this.address= add;
-   }
+public class Submit_details extends Fragment   {
+    private TextView addressView;
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        addressView = (TextView) view.findViewById(R.id.addressView);
+    }
+        void displayReceivedData (String message){
+            addressView.setText(message);
+
+    }
+    String addressLine;
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode==5){
+                addressLine=data.getStringExtra("addressLine");
+                TextView addressView = (TextView) getView().findViewById(R.id.addressView);
+                addressView.setText(addressLine);
+            }
+        }
+    }
 
     @Nullable
     @Override
@@ -53,28 +83,30 @@ public class Submit_details extends Fragment  {
 
         Bundle bundle = this.getArguments();
         if(bundle!=null) {
-        /*if(bundle.getString("Address")!=null) {
-            address = bundle.getString("Address");
-            TextView addressView = (TextView) view.findViewById(R.id.addressView);
-            addressView.setText(address);
-            Log.i("ADDRESSSSSSSSSSSSSS",address);
-        }*/ String strtext = bundle.getString("Sport");
+            String strtext = bundle.getString("Sport");
             TextView SportName = (TextView) view.findViewById(R.id.textView3);
             SportName.setText(strtext);
-
         }
 
-        final DatabaseReference database = FirebaseDatabase.getInstance().getReference("matches");
+        final FirebaseFirestore database = FirebaseFirestore.getInstance();
 
         ImageButton button = (ImageButton) view.findViewById(R.id.imageButton2);
         DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-
-                TextView DateView = (TextView) getView().findViewById(R.id.choose_date);
-                String dateString = dayOfMonth + "-" + month + "-" + year;
-                DateView.setText(dateString);
-
+                boolean CurrentDateSet;
+                Calendar c = Calendar.getInstance();
+                int y = c.get(Calendar.YEAR);
+                int m = c.get(Calendar.MONTH);
+                int d = c.get(Calendar.DAY_OF_MONTH);
+                if(year==y && month==m && dayOfMonth==d) CurrentDateSet=true;
+                if(year<y || (year==y && month<m) || (year==y && month==m && dayOfMonth<d)) Toast.makeText(getContext(),"Choose a valid date",Toast.LENGTH_LONG).show();
+                else{
+                    TextView DateView = (TextView) getView().findViewById(R.id.choose_date);
+                    month+=1;
+                    String dateString = dayOfMonth + "/" + month+ "/" + year;
+                    DateView.setText(dateString);
+                }
             }
         };
          final DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), listener,
@@ -110,8 +142,15 @@ public class Submit_details extends Fragment  {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), MapsActivity.class);
-                startActivity(intent);
+
+
+                Fragment fragment = new MapsActivity();
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragment.setTargetFragment(Submit_details.this,5);
+                fragmentTransaction.add(R.id.submit_details,fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
 
@@ -124,17 +163,39 @@ public class Submit_details extends Fragment  {
                 TextView timeView = (TextView) view.findViewById(R.id.timeView);
                 TextView SportName = (TextView) view.findViewById(R.id.textView3);
                 Spinner dropdown = view.findViewById(R.id.spinner);
-                //TextView addressView = (TextView) view.findViewById(R.id.address);
+                TextView addressView = (TextView) view.findViewById(R.id.addressView);
+
                 String time = timeView.getText().toString();
                 String date=  DateView.getText().toString();
                 String sport = SportName.getText().toString();
                 Integer players= (Integer)dropdown.getSelectedItem();
-                //String getArgument = getArguments().getString("Address");
-                //String address = addressView.getText().toString();
-                String id = database.push().getKey();
-                FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
-                Match match= new Match(sport,date,players,time,address,currentFirebaseUser.getUid(),id);
-                database.child(id).setValue(match);
+                String address= addressView.getText().toString();
+
+                if(time.isEmpty() || date.isEmpty()|| address.isEmpty())
+                    Toast.makeText(getContext(), "Enter all the required fields", Toast.LENGTH_SHORT).show();
+                else {
+
+                    String id= database.collection("matches").getId();
+                    FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                    final Match match = new Match(sport, date, players, time, addressLine, currentFirebaseUser.getUid(),"a");
+                    database.collection("matches")
+                            .add(match)
+                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                @Override
+                                public void onSuccess(DocumentReference documentReference) {
+                                    database.collection("matches").document(documentReference.getId()).update("id", documentReference.getId());
+                                    Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                                    Toast.makeText(getContext(),"Match Scheduled successfully",Toast.LENGTH_LONG).show();
+                                    getFragmentManager().popBackStack();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error adding document", e);
+                        }
+                    });
+
+                }
             }
         });
         return view;

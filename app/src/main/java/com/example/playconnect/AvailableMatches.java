@@ -4,30 +4,54 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.util.Date;
+
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+import java.text.SimpleDateFormat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
+
 
 public class AvailableMatches extends Fragment {
 
@@ -35,8 +59,8 @@ public class AvailableMatches extends Fragment {
     List<Match> MatchList = new ArrayList<>();
     List<String> MatchId = new ArrayList<>();
     final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("matches");
+    final FirebaseFirestore database = FirebaseFirestore.getInstance();
     String SportName;
-
 
     @Nullable
     @Override
@@ -48,22 +72,24 @@ public class AvailableMatches extends Fragment {
         if (bundle != null) {
             SportName = this.getArguments().getString("Sport");
         }
-        final DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("users");
+        final DatabaseReference databaseRefUser = FirebaseDatabase.getInstance().getReference("users");
+        final DatabaseReference databaseRefMatch= FirebaseDatabase.getInstance().getReference("matches");
 
        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
            @Override
-           public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+           public void onItemClick(AdapterView<?> parent, final View view, final int position, long id) {
                new AlertDialog.Builder(getContext())
                        .setMessage("Are you willing to play this match?")
                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                            @Override
                            public void onClick(DialogInterface dialog, int which){
-                                    Match match = MatchList.get(position);
-                                    match.availablePlayers+=1;
-                                    String matchID = match.getMatchID();
-                                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                                    String userID= currentUser.getUid();
-                                    match.player_ids.add(currentUser.getUid());
+                                    TextView textView= view.findViewById(R.id.matchid);
+                                    String ID= textView.getText().toString();
+                                    Log.d("IDDDDDDDDDDDD",ID);
+                                    FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                                    //if((String) database.collection("matches").document(ID).get("admin")!= currentFirebaseUser.getUid())
+                                    database.collection("matches").document(ID).update("player_ids",FieldValue.arrayUnion(currentFirebaseUser.getUid()));
+                                    database.collection("matches").document(ID).update("availablePlayers",FieldValue.increment(1));
 
                            }
                        })
@@ -73,7 +99,6 @@ public class AvailableMatches extends Fragment {
 
        });
 
-
         return view;
     }
 
@@ -82,31 +107,50 @@ public class AvailableMatches extends Fragment {
     public void onStart() {
 
         super.onStart();
-        databaseReference.orderByChild("sport").equalTo(SportName).addValueEventListener(new ValueEventListener() {
+        Log.d("SPORTNAMEEE", SportName);
+        database.collection("matches").whereEqualTo("sport",SportName).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                MatchList.clear();
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    MatchList.clear();
+                    Date date = new Date();
+                    Timestamp ts=new Timestamp(date.getTime());
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                         try {
+                             Date matchDate = new SimpleDateFormat("dd/MM/yyyy").parse(document.getData().get("date").toString());
+                             DateFormat dateFormat = new SimpleDateFormat("hh:mm");
+                             Date d = dateFormat.parse(document.getData().get("time").toString());
+                             if(date.compareTo(matchDate)<=0 && date.compareTo(d)>0){
+                                 Match match = document.toObject(Match.class);
+                                 MatchList.add(match);
+                                 Log.d("MATCH IDDDDDDDD",match.toString());
+                                 matchList adapter = new matchList(getActivity(), MatchList);
+                                 listView.setAdapter(adapter);
+                                 adapter.notifyDataSetChanged();
+                                 Log.d(TAG, "onSuccessssss: " + match.availablePlayers);
+                             }
+                             else{
+                                 Log.d("NOT FOUND", "MATCH DATE "+d+"CURRENT DATE "+date);
+                             }
 
-                for(DataSnapshot ds :snapshot.getChildren()) {
-                    Match match = ds.getValue(Match.class);
+                         }catch (Exception e){
+                             Log.d("Error ","in retreiving date and time: YESSSS");
+                             e.printStackTrace();
+                         }
+                        //Date matchDate= timestamp.toDate();
 
-                    if(match.availablePlayers< match.requiredPlayers) {
-                        String pattern = "dd-MM-yyyy";
-                        String dateInString = new SimpleDateFormat(pattern).format(new Date());
-                        MatchList.add(match);
-
-                        //Log.i("Match name", matchId);
                     }
-                }
-                matchList adapter = new matchList(getActivity(), MatchList);
-                listView.setAdapter(adapter);
+
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }}})
+            .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), "Error getting data!!!", Toast.LENGTH_LONG).show();
+                    }
+                });
+
             }
+};
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-    }
-}

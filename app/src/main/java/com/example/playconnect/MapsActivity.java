@@ -1,12 +1,13 @@
 package com.example.playconnect;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -22,10 +23,15 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -46,33 +52,65 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+import static android.app.Activity.RESULT_OK;
 
+public class MapsActivity extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+
+    MapView mMapView;
     private GoogleMap mMap;
+    public SendMessage sendMessage;
     LocationManager locationManager;
     LocationListener locationListener;
+
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.activity_maps, container, false);
+        mMapView = (MapView) view.findViewById(R.id.map);
+        mMapView.onCreate(savedInstanceState);
+        mMapView.onResume();
+        try {
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mMapView.getMapAsync(this);
+        return view;
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        mMapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
 
 
     public void updateMap(Location location) {
 
         LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.clear();
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14));
         mMap.addMarker(new MarkerOptions().position(userLocation).title("Your Location"));
 
     }
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-    }
 
 
     /**
@@ -93,7 +131,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         placesTask.execute(sbValue.toString());
         mMap.setOnMarkerClickListener(this);
 
-        locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -121,8 +159,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
         } else {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             } else {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
                 Location lastknownlocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -135,8 +173,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public StringBuilder sbMethod() {
         StringBuilder sb = null;
-        LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        if (Build.VERSION.SDK_INT < 23 || ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        if (Build.VERSION.SDK_INT < 23 || ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         Location lastknownlocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (lastknownlocation != null) {
@@ -146,8 +184,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
             sb.append("location=" + mLatitude + "," + mLongitude);
-            sb.append("&radius=5000");
-            sb.append("&types=" + "park");
+            sb.append("&radius=2000");
+            sb.append("&types=" + "playground");
             sb.append("&sensor=true");
 
             sb.append("&key=AIzaSyBeyijrAR_Vf1WekbJtCiZ-XUi_SbBJxyM");
@@ -156,7 +194,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         } else {
-            Toast.makeText(getApplicationContext(), "Sorry your location could not be traced", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Sorry your location could not be traced", Toast.LENGTH_LONG).show();
         }
 
         return sb;
@@ -228,12 +266,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             Log.d("Map", "list size: " + list.size());
             // Clears all the existing markers;
-            mMap.clear();
+
 
             for (int i = 0; i < list.size(); i++) {
 
                 // Creating a marker
                 MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.draggable(false);
+
 
                 // Getting a place from the places list
                 HashMap<String, String> hmPlace = list.get(i);
@@ -263,6 +303,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 // Placing a marker on the touched position
                 Marker m = mMap.addMarker(markerOptions);
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
 
             }
         }
@@ -346,12 +388,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
+    interface SendMessage {
+        void sendData(String message);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try {
+            sendMessage = (SendMessage) getActivity();
+        }
+        catch (ClassCastException e) {
+            throw new ClassCastException("Error in retrieving data. Please try again");
+        }
+    }
 
 
     @Override
     public boolean onMarkerClick(Marker marker) {
         try {
-            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+            Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
             List<Address> addresses = geocoder.getFromLocation(marker.getPosition().latitude, marker.getPosition().longitude, 1); //1 num of possible location returned
             String address = addresses.get(0).getAddressLine(0);
             String city = addresses.get(0).getLocality();
@@ -362,11 +418,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String title = address + "-" + city + "-" + state;
             Log.i("ADDRESS", address);
 
-            /*Bundle data = new Bundle();//create bundle instance
-            data.putString("Address", title);*/
-            Submit_details fragment = (Submit_details) getSupportFragmentManager().findFragmentById(R.id.frag_container2);
-            fragment.setAddress(address);
-
+            Intent intent = new Intent(getContext(), MapsActivity.class);
+            intent.putExtra("addressLine", address);
+            getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_OK, intent);
+            getFragmentManager().popBackStack();
 
         } catch (Exception e) {
             e.printStackTrace();

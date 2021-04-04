@@ -1,13 +1,14 @@
 package com.example.playconnect;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class User {
     String name, gender, phoneNo;
     int age;
     String password;
-    ArrayList <String> match_ID_organised;
-    ArrayList <String> match_ID_accepted;
+    List<String> match_ID_organised;
+    List <String> match_ID_accepted;
     String key;
     String userID;
     String ImageURL;
@@ -17,6 +18,8 @@ public class User {
         this.gender = gender;
         this.phoneNo = phoneNo;
         this.age = age;
+        this.match_ID_accepted= new ArrayList<>();
+        this.match_ID_organised= new ArrayList<>();
     }
 
     public User(){
@@ -48,12 +51,12 @@ public class User {
 
     public void addMatch_Organised(String matchId){
 
-        match_ID_organised.add(matchId);
+        this.match_ID_organised.add(matchId);
     }
 
     public void addMatch_Accepted(String matchId){
 
-        match_ID_accepted.add(matchId);
+        this.match_ID_accepted.add(matchId);
     }
 
     public void setImageURL(String imageURL) {

@@ -52,10 +52,10 @@ public class ScheduleMatch extends Fragment implements View.OnClickListener{
                 bundle.putString("Sport", button.getText().toString());
                 Fragment fragment = new Submit_details();
                 fragment.setArguments(bundle);
-                FragmentManager fragmentManager = getChildFragmentManager();
+                FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.frag_container2,fragment);
-                //fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
 

@@ -130,7 +130,7 @@ public class CheckOtp extends AppCompatActivity {
                     setPwd.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            final String pwd = setPwd.getText().toString();
+                            final String pwd = et_otp.getText().toString();
                             if(pwd.length()<8){
                                 Toast.makeText(getApplicationContext(),"Password must contain atleast 8 characters",Toast.LENGTH_LONG).show();
                             }
@@ -143,6 +143,10 @@ public class CheckOtp extends AppCompatActivity {
                                             String id = getIntent().getStringExtra("UserId");
                                             databaseRef.child(id).child("password").setValue(pwd);
                                             Toast.makeText(getApplicationContext(),"Password has been set successfully",Toast.LENGTH_LONG).show();
+                                            Toast.makeText(CheckOtp.this, "Signup Success", Toast.LENGTH_SHORT).show();
+                                            Intent intent = new Intent(getApplicationContext(),GameChoice.class);
+                                            startActivity(intent);
+
                                         }
                                         else {
                                             Toast.makeText(getApplicationContext(),"The password is not available",Toast.LENGTH_LONG).show();
@@ -158,9 +162,7 @@ public class CheckOtp extends AppCompatActivity {
                     }});
 
 
-                    Toast.makeText(CheckOtp.this, "Signup Success", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(),GameChoice.class);
-                    startActivity(intent);
+
                 } else {
                     Toast.makeText(CheckOtp.this, "Signup Failure", Toast.LENGTH_SHORT).show();
                 }

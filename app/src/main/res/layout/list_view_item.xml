@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:background=" #fed766"
     android:layout_height="match_parent">
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="109dp"
+        android:layout_height="87dp"
+        app:srcCompat="@drawable/profile" />
 
     <TextView
         android:id="@+id/dateAndTimeView"
@@ -13,5 +19,14 @@
     <TextView
         android:id="@+id/locationView"
         android:layout_width="match_parent"
-        android:layout_height="69dp" />
+        android:layout_height="89dp" />
+
+    <TextView
+        android:id="@+id/matchid"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="visible" />
+
+
+
 </LinearLayout>

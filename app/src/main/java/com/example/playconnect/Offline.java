@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 import androidx. fragment. app. Fragment;
 import androidx. fragment. app.FragmentPagerAdapter;
@@ -27,8 +29,167 @@ import com.example.playconnect.ui.main.SectionsPagerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class Offline extends AppCompatActivity {
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.List;
 
+
+public class Offline extends AppCompatActivity implements MapsActivity.SendMessage {
+
+
+    /*@Override
+    public void onBackPressed() {
+
+        if (getFragmentManager().getBackStackEntryCount() > 0 ){
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+*/
+    /*@Override
+    public void onBackPressed() {
+
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+
+        if (count == 0) {
+            super.onBackPressed();
+            //additional code
+        } else {
+            getSupportFragmentManager().popBackStack();
+        }
+
+    }*/
+    final  FragmentManager fragmentManager= new FragmentManager() {
+        @NonNull
+        @Override
+        public FragmentTransaction beginTransaction() {
+            return null;
+        }
+
+        @Override
+        public boolean executePendingTransactions() {
+            return false;
+        }
+
+        @Nullable
+        @Override
+        public Fragment findFragmentById(int id) {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public Fragment findFragmentByTag(@Nullable String tag) {
+            return null;
+        }
+
+        @Override
+        public void popBackStack() {
+
+        }
+
+        @Override
+        public boolean popBackStackImmediate() {
+            return false;
+        }
+
+        @Override
+        public void popBackStack(@Nullable String name, int flags) {
+
+        }
+
+        @Override
+        public boolean popBackStackImmediate(@Nullable String name, int flags) {
+            return false;
+        }
+
+        @Override
+        public void popBackStack(int id, int flags) {
+
+        }
+
+        @Override
+        public boolean popBackStackImmediate(int id, int flags) {
+            return false;
+        }
+
+        @Override
+        public int getBackStackEntryCount() {
+            return 0;
+        }
+
+        @NonNull
+        @Override
+        public BackStackEntry getBackStackEntryAt(int index) {
+            return null;
+        }
+
+        @Override
+        public void addOnBackStackChangedListener(@NonNull OnBackStackChangedListener listener) {
+
+        }
+
+        @Override
+        public void removeOnBackStackChangedListener(@NonNull OnBackStackChangedListener listener) {
+
+        }
+
+        @Override
+        public void putFragment(@NonNull Bundle bundle, @NonNull String key, @NonNull Fragment fragment) {
+
+        }
+
+        @Nullable
+        @Override
+        public Fragment getFragment(@NonNull Bundle bundle, @NonNull String key) {
+            return null;
+        }
+
+        @NonNull
+        @Override
+        public List<Fragment> getFragments() {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public Fragment.SavedState saveFragmentInstanceState(@NonNull Fragment f) {
+            return null;
+        }
+
+        @Override
+        public boolean isDestroyed() {
+            return false;
+        }
+
+        @Override
+        public void registerFragmentLifecycleCallbacks(@NonNull FragmentLifecycleCallbacks cb, boolean recursive) {
+
+        }
+
+        @Override
+        public void unregisterFragmentLifecycleCallbacks(@NonNull FragmentLifecycleCallbacks cb) {
+
+        }
+
+        @Nullable
+        @Override
+        public Fragment getPrimaryNavigationFragment() {
+            return null;
+        }
+
+        @Override
+        public void dump(@NonNull String prefix, @Nullable FileDescriptor fd, @NonNull PrintWriter writer, @Nullable String[] args) {
+
+        }
+
+        @Override
+        public boolean isStateSaved() {
+            return false;
+        }
+    };
+    String currentFragment="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -42,6 +203,158 @@ public class Offline extends AppCompatActivity {
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
 
+
+    }
+    @Override
+    public void onBackPressed() {
+        FragmentManager fm= new FragmentManager() {
+            @NonNull
+            @Override
+            public FragmentTransaction beginTransaction() {
+                return null;
+            }
+
+            @Override
+            public boolean executePendingTransactions() {
+                return false;
+            }
+
+            @Nullable
+            @Override
+            public Fragment findFragmentById(int id) {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public Fragment findFragmentByTag(@Nullable String tag) {
+                return null;
+            }
+
+            @Override
+            public void popBackStack() {
+
+            }
+
+            @Override
+            public boolean popBackStackImmediate() {
+                return false;
+            }
+
+            @Override
+            public void popBackStack(@Nullable String name, int flags) {
+
+            }
+
+            @Override
+            public boolean popBackStackImmediate(@Nullable String name, int flags) {
+                return false;
+            }
+
+            @Override
+            public void popBackStack(int id, int flags) {
+
+            }
+
+            @Override
+            public boolean popBackStackImmediate(int id, int flags) {
+                return false;
+            }
+
+            @Override
+            public int getBackStackEntryCount() {
+                return 0;
+            }
+
+            @NonNull
+            @Override
+            public BackStackEntry getBackStackEntryAt(int index) {
+                return null;
+            }
+
+            @Override
+            public void addOnBackStackChangedListener(@NonNull OnBackStackChangedListener listener) {
+
+            }
+
+            @Override
+            public void removeOnBackStackChangedListener(@NonNull OnBackStackChangedListener listener) {
+
+            }
+
+            @Override
+            public void putFragment(@NonNull Bundle bundle, @NonNull String key, @NonNull Fragment fragment) {
+
+            }
+
+            @Nullable
+            @Override
+            public Fragment getFragment(@NonNull Bundle bundle, @NonNull String key) {
+                return null;
+            }
+
+            @NonNull
+            @Override
+            public List<Fragment> getFragments() {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public Fragment.SavedState saveFragmentInstanceState(@NonNull Fragment f) {
+                return null;
+            }
+
+            @Override
+            public boolean isDestroyed() {
+                return false;
+            }
+
+            @Override
+            public void registerFragmentLifecycleCallbacks(@NonNull FragmentLifecycleCallbacks cb, boolean recursive) {
+
+            }
+
+            @Override
+            public void unregisterFragmentLifecycleCallbacks(@NonNull FragmentLifecycleCallbacks cb) {
+
+            }
+
+            @Nullable
+            @Override
+            public Fragment getPrimaryNavigationFragment() {
+                return null;
+            }
+
+            @Override
+            public void dump(@NonNull String prefix, @Nullable FileDescriptor fd, @NonNull PrintWriter writer, @Nullable String[] args) {
+
+            }
+
+            @Override
+            public boolean isStateSaved() {
+                return false;
+            }
+        };
+        if(fm.getBackStackEntryCount() == 0) {
+            super.onBackPressed();
+        }
+        else if(fm.getBackStackEntryCount() == 1) {
+            moveTaskToBack(false);
+        }
+        else {
+            fm.popBackStack();
+        }
+    }
+    @Override
+    public void sendData(String message) {
+        String tag = "android:switcher:" + R.id.view_pager + ":" + 1;
+        //ScheduleMatch parent= (ScheduleMatch)getSupportFragmentManager().findFragmentByTag(tag);
+        Bundle bundle=new Bundle();
+        bundle.putString("Address",message);
+        Log.i("dfggggggggggggg",message);
+        Submit_details f= (Submit_details) getSupportFragmentManager().findFragmentById(R.id.submit_details) ;
+        f.displayReceivedData(message);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -49,6 +362,8 @@ public class Offline extends AppCompatActivity {
         menuInflater.inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -112,6 +427,7 @@ public class Offline extends AppCompatActivity {
                 case 2:
                     fragment = new History();
                     break;
+
             }
             return fragment;
         }
@@ -129,8 +445,10 @@ public class Offline extends AppCompatActivity {
                     return "Schedule Match";
                 case 2:
                     return "History";
+
             }
             return null;
         }
     }
+
 }

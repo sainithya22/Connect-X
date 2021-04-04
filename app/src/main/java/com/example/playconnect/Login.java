@@ -1,5 +1,6 @@
 package com.example.playconnect;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -39,8 +40,8 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists()) {
-
-
+                            Intent intent = new Intent(getApplicationContext(),GameChoice.class);
+                            startActivity(intent);
                         }
                         else {
                             Toast.makeText(getApplicationContext(),"Wrong password:(",Toast.LENGTH_LONG).show();

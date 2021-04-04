@@ -63,11 +63,11 @@ public class FindMatch extends Fragment implements View.OnClickListener{
         bundle.putString("Sport", button.getText().toString());
         Fragment fragment = new AvailableMatches();
         fragment.setArguments(bundle);
-        FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.frag_container1,fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .addToBackStack(null)
+                 .replace(R.id.frag_container1,fragment)
+                .commit();
 
     }
     }

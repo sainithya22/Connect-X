@@ -56,7 +56,7 @@ public class SignUp extends AppCompatActivity implements DatePickerDialog.OnDate
     FirebaseStorage storage;
     StorageReference storageReference;
     FirebaseUser firebaseUser=FirebaseAuth.getInstance().getCurrentUser();;
-    public DateTime dateOfBirth;
+    public org.joda.time.LocalDate dateOfBirth;
     public String imageURL = null;
 
     @Override
@@ -151,7 +151,7 @@ public class SignUp extends AppCompatActivity implements DatePickerDialog.OnDate
         TextView DateView = (TextView) findViewById(R.id.DateView);
         String date = dayOfMonth + "/" + month + "/" + year;
         DateView.setText(date);
-        dateOfBirth = new DateTime(new Date(year, month, dayOfMonth));
+        dateOfBirth = new org.joda.time.LocalDate(year, month, dayOfMonth);
     }
 
     public void validation(View view) {
@@ -165,7 +165,7 @@ public class SignUp extends AppCompatActivity implements DatePickerDialog.OnDate
         RadioButton radioButton = (RadioButton) findViewById(selectedId);
         String userGender = radioButton.getText().toString();
 
-        DateTime now = new DateTime(Calendar.getInstance().getTime());
+        org.joda.time.LocalDate now = new org.joda.time.LocalDate(Calendar.getInstance().getTime());
         Integer age = Years.yearsBetween(dateOfBirth, now).getYears();
         if (age < 15) {
             Toast.makeText(this, "This app requires everyone to be at least 15 years old before they can create an account", Toast.LENGTH_LONG).show();

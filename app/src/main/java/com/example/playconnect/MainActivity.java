@@ -16,10 +16,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        intent = new Intent(getApplicationContext(), Offline.class);
+        startActivity(intent);
         FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth auth) {
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         };
     }
     Intent intent;
+
     public void login(View view){
         intent = new Intent(getApplicationContext(), Login.class);
         startActivity(intent);
